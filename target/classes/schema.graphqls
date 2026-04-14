@@ -1,0 +1,40 @@
+type Usuario {
+    idUsuario: ID
+    nombre: String
+    apellido: String
+    correo: String
+    telefono: String
+    fechaRegistro: String
+    estado: String
+}
+
+type Libro {
+    idLibro: ID
+    titulo: String
+    autor: String
+    isbn: String
+    anioPublicacion: Int
+    categoria: String
+    stock: Int
+    disponible: Boolean
+}
+
+type Prestamo {
+    idPrestamo: ID
+    idUsuario: ID
+    idLibro: ID
+    fechaPrestamo: String
+    fechaDevolucion: String
+    estado: String
+}
+
+type Query {
+    usuario(id: ID!): Usuario
+    usuarios: [Usuario]
+    prestamos: [Prestamo]
+}
+
+type Mutation {
+    crearUsuario(nombre: String!, apellido: String!, correo: String!, telefono: String): Usuario
+    crearPrestamo(idUsuario: ID!, idLibro: ID!): Prestamo
+}

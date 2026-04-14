@@ -1,0 +1,14 @@
+/Users/dsantand/Developer/Duoc/Cloud_Native/java-azure-function/src/main/java/com/function/model/Libro.java
+/Users/dsantand/Developer/Duoc/Cloud_Native/java-azure-function/src/main/java/com/function/config/OracleConnectionManager.java
+/Users/dsantand/Developer/Duoc/Cloud_Native/java-azure-function/src/main/java/com/function/model/Usuario.java
+/Users/dsantand/Developer/Duoc/Cloud_Native/java-azure-function/src/main/java/com/function/model/Prestamo.java
+/Users/dsantand/Developer/Duoc/Cloud_Native/java-azure-function/src/main/java/com/function/UsuarioFunction.java
+/Users/dsantand/Developer/Duoc/Cloud_Native/java-azure-function/src/main/java/com/function/repository/UsuarioRepository.java
+/Users/dsantand/Developer/Duoc/Cloud_Native/java-azure-function/src/main/java/com/function/LibroFunction.java
+/Users/dsantand/Developer/Duoc/Cloud_Native/java-azure-function/src/main/java/com/function/repository/PrestamoRepository.java
+/Users/dsantand/Developer/Duoc/Cloud_Native/java-azure-function/src/main/java/com/function/repository/LibroRepository.java
+/Users/dsantand/Developer/Duoc/Cloud_Native/java-azure-function/src/main/java/com/function/util/JsonUtil.java
+/Users/dsantand/Developer/Duoc/Cloud_Native/java-azure-function/src/main/java/com/function/service/LibraryService.java
+/Users/dsantand/Developer/Duoc/Cloud_Native/java-azure-function/src/main/java/com/function/graphql/GraphQLProvider.java
+/Users/dsantand/Developer/Duoc/Cloud_Native/java-azure-function/src/main/java/com/function/PrestamoFunction.java
+/Users/dsantand/Developer/Duoc/Cloud_Native/java-azure-function/src/main/java/com/function/GraphQLFunction.java
