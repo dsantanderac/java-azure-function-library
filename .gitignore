@@ -1,0 +1,11 @@
+// Ignore target folder
+target/
+
+// Ignore wallet folder
+src/main/resources/wallet/
+
+// Ignore local settings
+local.settings.json
+
+// Ignore .vscode folder
+.vscode/
