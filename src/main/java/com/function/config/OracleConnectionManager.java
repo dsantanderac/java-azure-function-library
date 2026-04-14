@@ -1,40 +1,103 @@
 package com.function.config;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.UUID;
 
 public class OracleConnectionManager {
-    private static final String URL = System.getenv("ORACLE_DB_URL");
-    private static final String USER = System.getenv("ORACLE_DB_USER");
-    private static final String PASSWORD = System.getenv("ORACLE_DB_PASSWORD");
-    private static final String TNS_ADMIN = System.getenv("TNS_ADMIN");
 
     static {
         try {
             Class.forName("oracle.jdbc.OracleDriver");
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Could not load oracle.jdbc.OracleDriver", e);
         }
     }
 
     public static Connection getConnection() throws SQLException {
-        System.out.println("ORACLE_DB_URL=" + URL);
-        System.out.println("ORACLE_DB_USER=" + USER);
-        System.out.println("TNS_ADMIN=" + TNS_ADMIN);
-        System.out.println("Exists wallet path? " + new java.io.File(TNS_ADMIN).exists());
-        System.out.println("Exists tnsnames.ora? " + new java.io.File(TNS_ADMIN, "tnsnames.ora").exists());
-        System.out.println("Exists sqlnet.ora? " + new java.io.File(TNS_ADMIN, "sqlnet.ora").exists());
+        String url = System.getenv("ORACLE_DB_URL");
+        String user = System.getenv("ORACLE_DB_USER");
+        String password = System.getenv("ORACLE_DB_PASSWORD");
 
-        if (TNS_ADMIN != null && !TNS_ADMIN.isEmpty()) {
-            System.setProperty("oracle.net.tns_admin", TNS_ADMIN);
+        if (url == null || url.isBlank()) {
+            throw new IllegalStateException("ORACLE_DB_URL is not configured");
+        }
+        if (user == null || user.isBlank()) {
+            throw new IllegalStateException("ORACLE_DB_USER is not configured");
+        }
+        if (password == null || password.isBlank()) {
+            throw new IllegalStateException("ORACLE_DB_PASSWORD is not configured");
         }
 
-        Properties props = new Properties();
-        props.setProperty("user", USER);
-        props.setProperty("password", PASSWORD);
+        String walletPath = prepareWallet();
 
-        return DriverManager.getConnection(URL, props);
+        Properties props = new Properties();
+        props.setProperty("user", user);
+        props.setProperty("password", password);
+        props.setProperty("oracle.net.tns_admin", walletPath);
+
+        return DriverManager.getConnection(url, props);
+    }
+
+    private static String prepareWallet() {
+        try {
+            Path walletDir = Files.createTempDirectory("oracle-wallet-" + UUID.randomUUID());
+
+            String[] files = {
+                    "tnsnames.ora",
+                    "sqlnet.ora",
+                    "cwallet.sso",
+                    "ewallet.p12",
+                    "keystore.jks",
+                    "truststore.jks",
+                    "ojdbc.properties"
+            };
+
+            for (String fileName : files) {
+                copyResourceIfExists("wallet/" + fileName, walletDir.resolve(fileName));
+            }
+
+            logWalletFiles(walletDir);
+
+            return walletDir.toAbsolutePath().toString();
+        } catch (IOException e) {
+            throw new RuntimeException("Error preparing wallet in runtime", e);
+        }
+    }
+
+    private static void copyResourceIfExists(String resourcePath, Path targetPath) throws IOException {
+        try (InputStream is = OracleConnectionManager.class.getClassLoader().getResourceAsStream(resourcePath)) {
+            if (is == null) {
+                System.out.println("Resource not found, skipping: " + resourcePath);
+                return;
+            }
+            Files.copy(is, targetPath, StandardCopyOption.REPLACE_EXISTING);
+            System.out.println("Copied: " + resourcePath + " -> " + targetPath);
+        }
+    }
+
+    private static void logWalletFiles(Path walletDir) {
+        String[] expected = {
+                "tnsnames.ora",
+                "sqlnet.ora",
+                "cwallet.sso",
+                "ewallet.p12",
+                "keystore.jks",
+                "truststore.jks",
+                "ojdbc.properties"
+        };
+
+        for (String name : expected) {
+            File f = walletDir.resolve(name).toFile();
+            System.out.println(name + " exists? " + f.exists());
+        }
     }
 }
